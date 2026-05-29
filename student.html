@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Portal – Question Bank</title>
+  <meta name="description" content="Search and download question papers by year, semester, branch and subject." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="student-body">
+
+  <!-- ── Top Nav ─────────────────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">📚</span>
+      <span class="brand-text">Question<span class="accent">Bank</span></span>
+    </div>
+    <div class="nav-links">
+      <a href="/teacher" class="nav-link">Teacher Portal</a>
+    </div>
+  </nav>
+
+  <!-- ── Hero ──────────────────────────────────────────────────────────────  -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">Find Your <span class="accent">Question Papers</span></h1>
+      <p class="hero-sub">Search through hundreds of papers by year, branch, subject and more</p>
+      <div class="hero-stats" id="heroStats">
+        <div class="stat-chip">📄 Loading papers…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Search Card ────────────────────────────────────────────────────── -->
+  <main>
+    <div class="glass-card search-card">
+      <h2 class="search-title">🔍 Search Papers</h2>
+      <form id="searchForm" onsubmit="doSearch(event)">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="s_year">Year</label>
+            <select id="s_year" name="year">
+              <option value="">All Years</option>
+              <option value="1st">1st Year</option>
+              <option value="2nd">2nd Year</option>
+              <option value="3rd">3rd Year</option>
+              <option value="4th">4th Year</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="s_semester">Semester</label>
+            <select id="s_semester" name="semester">
+              <option value="">All Semesters</option>
+              <option value="1">Semester 1</option>
+              <option value="2">Semester 2</option>
+              <option value="3">Semester 3</option>
+              <option value="4">Semester 4</option>
+              <option value="5">Semester 5</option>
+              <option value="6">Semester 6</option>
+              <option value="7">Semester 7</option>
+              <option value="8">Semester 8</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="s_exam_type">Exam Type</label>
+            <select id="s_exam_type" name="exam_type">
+              <option value="">All Types</option>
+              <option value="Regular">Regular</option>
+              <option value="KT">KT</option>
+              <option value="Practice">Practice</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="s_branch">Branch</label>
+            <input type="text" id="s_branch" name="branch" placeholder="e.g. Computer Science" />
+          </div>
+
+          <div class="form-group">
+            <label for="s_subject">Subject</label>
+            <input type="text" id="s_subject" name="subject" placeholder="e.g. Data Structures" />
+          </div>
+
+          <div class="form-group">
+            <label for="s_month">Month</label>
+            <select id="s_month" name="month">
+              <option value="">All Months</option>
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="search-actions">
+          <button type="submit" id="searchBtn" class="btn btn-primary">
+            🔍 Search Papers
+          </button>
+          <button type="button" class="btn btn-outline" onclick="clearSearch()">
+            ✕ Clear Filters
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ── Results ───────────────────────────────────────────────────────── -->
+    <div class="results-header" id="resultsHeader" style="display:none">
+      <h2 id="resultsTitle">Search Results</h2>
+      <span id="resultsCount" class="results-badge"></span>
+    </div>
+
+    <div id="searchError" class="alert alert-error" style="display:none"></div>
+
+    <div id="papersGrid" class="papers-grid">
+      <div class="empty-state">
+        <div class="empty-icon">📂</div>
+        <p>Use the filters above and click <strong>Search</strong></p>
+        <p class="empty-hint">Leave all fields empty to browse all papers</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 QuestionBank · For educational use only</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script>
+    // Load total count on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      fetch('/search')
+        .then(r => r.json())
+        .then(data => {
+          const count = data.papers ? data.papers.length : 0;
+          document.getElementById('heroStats').innerHTML =
+            `<div class="stat-chip">📄 ${count} Papers Available</div>`;
+        });
+    });
+  </script>
+</body>
+</html>

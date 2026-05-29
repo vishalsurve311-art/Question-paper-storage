@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Portal – Question Bank</title>
+  <meta name="description" content="Secure teacher portal to upload question papers to the question bank." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="teacher-body">
+
+  <!-- ── Top Nav ─────────────────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">📚</span>
+      <span class="brand-text">Question<span class="accent">Bank</span></span>
+    </div>
+    <div class="nav-links">
+      <a href="/student" class="nav-link">Student Portal</a>
+      <button id="logoutBtn" class="btn btn-outline" style="display:none" onclick="doLogout()">Logout</button>
+    </div>
+  </nav>
+
+  <!-- ── Login Section ────────────────────────────────────────────────────── -->
+  <main>
+    <section id="loginSection" class="auth-section">
+      <div class="glass-card auth-card">
+        <div class="auth-header">
+          <div class="auth-icon">🔐</div>
+          <h1>Teacher Login</h1>
+          <p>Enter your password to access the upload portal</p>
+        </div>
+        <form id="loginForm" onsubmit="doLogin(event)">
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="password-wrapper">
+              <input type="password" id="password" name="password"
+                     placeholder="Enter teacher password" required autocomplete="current-password" />
+              <button type="button" class="eye-btn" onclick="togglePasswordVisibility()">👁</button>
+            </div>
+          </div>
+          <div id="loginError" class="alert alert-error" style="display:none"></div>
+          <button type="submit" id="loginBtn" class="btn btn-primary btn-full">
+            <span class="btn-text">Login</span>
+            <span class="btn-spinner" style="display:none">⏳</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ── Upload Section ───────────────────────────────────────────────── -->
+    <section id="uploadSection" style="display:none" class="upload-section">
+      <div class="section-header">
+        <h1>📤 Upload Question Paper</h1>
+        <p class="section-sub">Fill in all details and select the file to upload</p>
+      </div>
+
+      <div class="glass-card upload-card">
+        <form id="uploadForm" onsubmit="doUpload(event)" enctype="multipart/form-data">
+
+          <!-- Row 1 -->
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="year">Year <span class="required">*</span></label>
+              <select id="year" name="year" required>
+                <option value="">— Select Year —</option>
+                <option value="1st">1st Year</option>
+                <option value="2nd">2nd Year</option>
+                <option value="3rd">3rd Year</option>
+                <option value="4th">4th Year</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="semester">Semester <span class="required">*</span></label>
+              <select id="semester" name="semester" required>
+                <option value="">— Select Semester —</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="exam_type">Exam Type <span class="required">*</span></label>
+              <select id="exam_type" name="exam_type" required>
+                <option value="">— Select Type —</option>
+                <option value="Regular">Regular</option>
+                <option value="KT">KT</option>
+                <option value="Practice">Practice</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Row 2 -->
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="branch">Branch <span class="required">*</span></label>
+              <input type="text" id="branch" name="branch"
+                     placeholder="e.g. Computer Science" required />
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Subject <span class="required">*</span></label>
+              <input type="text" id="subject" name="subject"
+                     placeholder="e.g. Data Structures" required />
+            </div>
+
+            <div class="form-group">
+              <label for="month">Month <span class="required">*</span></label>
+              <select id="month" name="month" required>
+                <option value="">— Select Month —</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- File Upload -->
+          <div class="form-group">
+            <label for="file">Question Paper File <span class="required">*</span></label>
+            <div class="file-drop-zone" id="dropZone" onclick="document.getElementById('file').click()">
+              <div class="drop-icon">📎</div>
+              <p class="drop-text">Click to browse or drag &amp; drop your file here</p>
+              <p class="drop-hint">PDF, DOC, DOCX, JPG, PNG supported (max 50 MB)</p>
+              <div id="fileNameDisplay" class="file-name-display" style="display:none"></div>
+              <input type="file" id="file" name="file" required style="display:none"
+                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx,.ppt,.pptx"
+                     onchange="handleFileSelect(this)" />
+            </div>
+          </div>
+
+          <!-- Upload Progress -->
+          <div id="uploadProgress" class="progress-wrapper" style="display:none">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span id="progressText" class="progress-text">Uploading…</span>
+          </div>
+
+          <div id="uploadMessage" class="alert" style="display:none"></div>
+
+          <button type="submit" id="uploadBtn" class="btn btn-primary btn-full">
+            <span>🚀 Upload Paper</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Uploaded Papers List -->
+      <div class="section-header" style="margin-top:2.5rem">
+        <h2>📋 Uploaded Papers</h2>
+        <p class="section-sub">Manage papers you have uploaded</p>
+      </div>
+      <div id="uploadedPapers" class="papers-grid">
+        <div class="empty-state">Loading papers…</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 QuestionBank · Teacher Portal</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script>
+    // Check if already logged in on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      fetch('/session-status')
+        .then(r => r.json())
+        .then(data => {
+          if (data.logged_in) showUploadSection();
+        });
+
+      // Drag-and-drop support
+      const zone = document.getElementById('dropZone');
+      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+      zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+        const dt = e.dataTransfer;
+        if (dt.files.length) {
+          document.getElementById('file').files = dt.files;
+          handleFileSelect(document.getElementById('file'));
+        }
+      });
+    });
+  </script>
+</body>
+</html>
